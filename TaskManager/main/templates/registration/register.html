@@ -1,0 +1,91 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Create Account{% endblock %}
+{% block card_class %}auth-card--compact{% endblock %}
+{% block auth_title %}Create Account{% endblock %}
+{% block auth_subtitle %}Request access in one quick step.{% endblock %}
+
+{% block auth_errors %}
+    {% if form.non_field_errors and not pending_approval %}
+        <ul class="auth-errors" data-auth-errors>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block auth_content %}
+    {% if pending_approval %}
+        <div class="pending-panel">
+            Your account is pending approval. Please wait for admin approval.
+        </div>
+    {% else %}
+        <form method="post" class="auth-form" data-auth-form="register" novalidate>
+            {% csrf_token %}
+
+            <div class="form-section">
+                <p class="form-section-title">Account</p>
+
+                <div class="auth-field" data-field="email">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    <div class="field-input-wrap">
+                        {{ form.email }}
+                        <span class="field-state" aria-hidden="true"></span>
+                    </div>
+                    <p class="field-feedback" data-field-feedback="email" aria-live="polite">
+                        {% if form.email.errors %}{{ form.email.errors|striptags }}{% endif %}
+                    </p>
+                </div>
+
+                <div class="auth-field" data-field="full_name">
+                    <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                    <div class="field-input-wrap">
+                        {{ form.full_name }}
+                        <span class="field-state" aria-hidden="true"></span>
+                    </div>
+                    <p class="field-feedback" data-field-feedback="full_name" aria-live="polite">
+                        {% if form.full_name.errors %}{{ form.full_name.errors|striptags }}{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <p class="form-section-title">Security</p>
+
+                <div class="auth-field" data-field="password1">
+                    <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                    <div class="field-input-wrap">
+                        {{ form.password1 }}
+                        <span class="field-state" aria-hidden="true"></span>
+                    </div>
+                    <p class="field-feedback" data-field-feedback="password1" aria-live="polite">
+                        {% if form.password1.errors %}{{ form.password1.errors|striptags }}{% endif %}
+                    </p>
+                </div>
+
+                <div class="auth-field" data-field="password2">
+                    <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                    <div class="field-input-wrap">
+                        {{ form.password2 }}
+                        <span class="field-state" aria-hidden="true"></span>
+                    </div>
+                    <p class="field-feedback" data-field-feedback="password2" aria-live="polite">
+                        {% if form.password2.errors %}{{ form.password2.errors|striptags }}{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <button class="auth-submit" type="submit">Create Account</button>
+            <p class="auth-meta">All new accounts require admin approval before first login.</p>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block auth_footer %}
+    {% if pending_approval %}
+        <p class="auth-footer"><a href="{% url 'main:login' %}">Back to sign in</a></p>
+    {% else %}
+        <p class="auth-footer">Already registered? <a href="{% url 'main:login' %}">Log in</a></p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block page_title %}Authentication{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/auth.css' %}?v=20260222-1">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-shell">
+            <aside class="auth-brand-panel" aria-label="Application overview">
+                <div class="brand-logo-wrap">
+                    <img class="brand-logo" src="{% static 'main/images/kasneb.png' %}" alt="KASNEB logo" width="232">
+                </div>
+                <p class="brand-kicker">TaskManager</p>
+                <h2 class="brand-title">{% block brand_title %}Built For Focused Teams{% endblock %}</h2>
+                <p class="brand-subtitle">
+                    {% block brand_subtitle %}
+                        Plan work, track delivery, and keep your team aligned with clear accountability.
+                    {% endblock %}
+                </p>
+                <ul class="brand-points">
+                    {% block brand_points %}
+                        <li>Approval-based access for secure onboarding</li>
+                        <li>Structured workflows with auditable actions</li>
+                        <li>Professional task operations at scale</li>
+                    {% endblock %}
+                </ul>
+            </aside>
+
+            <main class="auth-card {% block card_class %}{% endblock %}" id="auth-card">
+                <header class="auth-header">
+                    <p class="auth-kicker">TaskManager</p>
+                    <h1 class="auth-title">{% block auth_title %}{% endblock %}</h1>
+                    <p class="auth-subtitle">{% block auth_subtitle %}{% endblock %}</p>
+                </header>
+
+                {% block auth_errors %}{% endblock %}
+                {% block auth_content %}{% endblock %}
+                {% block auth_footer %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'main/js/auth.js' %}" defer></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

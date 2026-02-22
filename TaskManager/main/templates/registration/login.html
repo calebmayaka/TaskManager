@@ -1,0 +1,50 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Log In{% endblock %}
+{% block auth_title %}Welcome Back{% endblock %}
+{% block auth_subtitle %}Sign in with your email to access your tasks.{% endblock %}
+
+{% block auth_errors %}
+    {% if form.non_field_errors %}
+        <ul class="auth-errors" data-auth-errors>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block auth_content %}
+    <form method="post" class="auth-form" data-auth-form="login" novalidate>
+        {% csrf_token %}
+
+        <div class="auth-field" data-field="username">
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            <div class="field-input-wrap">
+                {{ form.username }}
+                <span class="field-state" aria-hidden="true"></span>
+            </div>
+            <p class="field-feedback" data-field-feedback="username" aria-live="polite">
+                {% if form.username.errors %}{{ form.username.errors|striptags }}{% endif %}
+            </p>
+        </div>
+
+        <div class="auth-field" data-field="password">
+            <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            <div class="field-input-wrap">
+                {{ form.password }}
+                <span class="field-state" aria-hidden="true"></span>
+            </div>
+            <p class="field-feedback" data-field-feedback="password" aria-live="polite">
+                {% if form.password.errors %}{{ form.password.errors|striptags }}{% endif %}
+            </p>
+        </div>
+
+        <button class="auth-submit" type="submit">Log In</button>
+        <p class="auth-meta">Secure sign-in with approval-based account access.</p>
+    </form>
+{% endblock %}
+
+{% block auth_footer %}
+    <p class="auth-footer">Don't have an account? <a href="{% url 'main:register' %}">Create one</a></p>
+{% endblock %}

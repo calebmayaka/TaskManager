@@ -1,0 +1,189 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Task Management{% endblock %}
+{% block dashboard_title %}Task Management{% endblock %}
+{% block dashboard_subtitle %}Task operations landing page. Task models and actions will be connected in the next phase.{% endblock %}
+
+{% block dashboard_nav %}
+    <a class="nav-btn is-active" href="{% url 'main:admin-dashboard-tasks' %}">Tasks</a>
+    <a class="nav-btn" href="{% url 'main:admin-dashboard-users' %}">Users</a>
+    <a class="nav-btn" href="{% url 'main:account-profile' %}">Account</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .stat-label {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+    }
+
+    .stat-value {
+        margin: 8px 0 0;
+        color: #7387a7;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .layout-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 12px;
+    }
+
+    .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .panel h2 {
+        margin: 0 0 8px;
+        font-size: 1.03rem;
+    }
+
+    .muted {
+        color: var(--muted);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .task-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.88rem;
+    }
+
+    .task-table th,
+    .task-table td {
+        border-top: 1px solid #e4ebf8;
+        padding: 8px 6px;
+        text-align: left;
+        color: #5f7394;
+    }
+
+    .task-table th {
+        color: #3f5476;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .action-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+    }
+
+    .action-list li {
+        border: 1px dashed #c7d4eb;
+        border-radius: 8px;
+        padding: 9px 10px;
+        color: #4f6485;
+        background: #f8fbff;
+    }
+
+    .roadmap {
+        margin-top: 12px;
+        border: 1px solid #d7e2f3;
+        background: #f4f8ff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #37527e;
+        font-size: 0.88rem;
+    }
+
+    @media (max-width: 920px) {
+        .layout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<section id="tasks-module">
+    <section class="stats">
+        <article class="stat-card">
+            <p class="stat-label">Today</p>
+            <p class="stat-value">No task data yet</p>
+        </article>
+        <article class="stat-card">
+            <p class="stat-label">Upcoming</p>
+            <p class="stat-value">No task data yet</p>
+        </article>
+        <article class="stat-card">
+            <p class="stat-label">Overdue</p>
+            <p class="stat-value">No task data yet</p>
+        </article>
+        <article class="stat-card">
+            <p class="stat-label">Team Load</p>
+            <p class="stat-value">No task data yet</p>
+        </article>
+    </section>
+
+    <section class="layout-grid">
+        <article class="panel">
+            <h2>Recent Tasks</h2>
+            <p class="muted">Task table scaffold is ready. Data will populate once Task models are introduced.</p>
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Assigned To</th>
+                        <th>Status</th>
+                        <th>Scheduled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Coming soon</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Coming soon</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+
+        <article class="panel">
+            <h2>Task Actions</h2>
+            <ul class="action-list">
+                <li>Create task (coming soon)</li>
+                <li>Assign/reassign task (coming soon)</li>
+                <li>Review task workflows (coming soon)</li>
+                <li>Filter by date/user/status (coming soon)</li>
+            </ul>
+        </article>
+    </section>
+
+    <aside class="roadmap">
+        Next iteration will connect this page to real Task, Reminder, and TaskSeries data.
+    </aside>
+</section>
+{% endblock %}

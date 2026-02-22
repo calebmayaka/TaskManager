@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Pending Users</title>
+</head>
+<body>
+    <h1>Pending User Approvals</h1>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if pending_approvals %}
+        <ul>
+            {% for approval in pending_approvals %}
+                <li>
+                    <strong>{{ approval.user.username }}</strong>
+                    ({{ approval.user.email }})
+                    <form method="post" action="{% url 'main:review-user-approval' approval.user.id 'approve' %}">
+                        {% csrf_token %}
+                        <label for="approve-notes-{{ approval.user.id }}">Notes:</label>
+                        <input id="approve-notes-{{ approval.user.id }}" type="text" name="notes">
+                        <button type="submit">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'main:review-user-approval' approval.user.id 'reject' %}">
+                        {% csrf_token %}
+                        <label for="reject-reason-{{ approval.user.id }}">Rejection reason:</label>
+                        <input id="reject-reason-{{ approval.user.id }}" type="text" name="reason">
+                        <label for="reject-notes-{{ approval.user.id }}">Notes:</label>
+                        <input id="reject-notes-{{ approval.user.id }}" type="text" name="notes">
+                        <button type="submit">Reject</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pending users.</p>
+    {% endif %}
+</body>
+</html>

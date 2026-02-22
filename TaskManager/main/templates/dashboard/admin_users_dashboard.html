@@ -1,0 +1,210 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_title %}Users & Approvals{% endblock %}
+{% block dashboard_title %}Users & Approvals{% endblock %}
+{% block dashboard_subtitle %}Review new account requests and monitor approval activity.{% endblock %}
+
+{% block dashboard_nav %}
+    <a class="nav-btn" href="{% url 'main:admin-dashboard-tasks' %}">Tasks</a>
+    <a class="nav-btn is-active" href="{% url 'main:admin-dashboard-users' %}">Users</a>
+    <a class="nav-btn" href="{% url 'main:account-profile' %}">Account</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .stat-label {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+    }
+
+    .stat-value {
+        margin: 6px 0 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .panel-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 12px;
+    }
+
+    .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .panel h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+    }
+
+    .approval-row {
+        padding: 10px 0;
+        border-top: 1px solid #e5ebf5;
+    }
+
+    .approval-row:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .approval-meta {
+        margin: 0 0 7px;
+        color: var(--muted);
+        font-size: 0.86rem;
+    }
+
+    .inline-form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+
+    .inline-form input {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 8px;
+        font: inherit;
+        font-size: 0.86rem;
+    }
+
+    .btn {
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 7px 10px;
+        cursor: pointer;
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+
+    .btn-approve {
+        background: #e9f7ee;
+        color: var(--ok);
+        border-color: #bfe4cc;
+    }
+
+    .btn-reject {
+        background: #fdeeee;
+        color: var(--danger);
+        border-color: #f7c8c8;
+    }
+
+    .event-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .event-list li {
+        border-top: 1px solid #e5ebf5;
+        padding: 8px 0;
+        font-size: 0.88rem;
+        color: #425872;
+    }
+
+    .event-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .event-list strong {
+        color: var(--ink);
+    }
+
+    @media (max-width: 920px) {
+        .panel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<section id="users-module">
+<section class="stats">
+    <article class="stat-card">
+        <p class="stat-label">Pending approvals</p>
+        <p class="stat-value">{{ pending_count }}</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Approved users</p>
+        <p class="stat-value">{{ approved_count }}</p>
+    </article>
+    <article class="stat-card">
+        <p class="stat-label">Rejected users</p>
+        <p class="stat-value">{{ rejected_count }}</p>
+    </article>
+</section>
+
+<section class="panel-grid">
+    <article class="panel">
+        <h2>Approval Queue</h2>
+        {% if pending_approvals %}
+            {% for approval in pending_approvals %}
+                <div class="approval-row">
+                    <p class="approval-meta">
+                        <strong>{{ approval.user.get_full_name|default:approval.user.username }}</strong>
+                        ({{ approval.user.email }})
+                    </p>
+
+                    <form class="inline-form" method="post" action="{% url 'main:review-user-approval' approval.user.id 'approve' %}">
+                        {% csrf_token %}
+                        <input type="text" name="notes" aria-label="Approval notes for {{ approval.user.email }}" placeholder="Optional approval note">
+                        <button class="btn btn-approve" type="submit">Approve</button>
+                    </form>
+
+                    <form class="inline-form" method="post" action="{% url 'main:review-user-approval' approval.user.id 'reject' %}">
+                        {% csrf_token %}
+                        <input type="text" name="reason" aria-label="Rejection reason for {{ approval.user.email }}" placeholder="Rejection reason">
+                        <button class="btn btn-reject" type="submit">Reject</button>
+                        <input type="text" name="notes" aria-label="Rejection notes for {{ approval.user.email }}" placeholder="Optional rejection note">
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No users are currently pending approval.</p>
+        {% endif %}
+    </article>
+
+    <article class="panel">
+        <h2>Recent Approval Activity</h2>
+        {% if recent_events %}
+            <ul class="event-list">
+                {% for event in recent_events %}
+                    <li>
+                        <strong>{{ event.get_action_display }}</strong>:
+                        {{ event.target_user.email }}
+                        {% if event.actor %}
+                            by {{ event.actor.email }}
+                        {% else %}
+                            by system
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No approval activity yet.</p>
+        {% endif %}
+    </article>
+</section>
+</section>
+{% endblock %}
