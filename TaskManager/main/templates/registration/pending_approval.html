@@ -1,12 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Pending Approval</title>
-</head>
-<body>
-    <h1>Account Pending Approval</h1>
-    <p>Your account is pending approval. Please wait for admin approval.</p>
-    <p><a href="{% url 'main:login' %}">Back to login</a></p>
-</body>
-</html>
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Pending Approval — TaskManager{% endblock %}
+
+{% block brand_title %}Almost There{% endblock %}
+{% block brand_subtitle %}Your account is in the review queue. An administrator will confirm your access shortly.{% endblock %}
+{% block brand_points %}
+    <li>Approval-based access keeps the platform secure</li>
+    <li>You will be able to sign in once your account is approved</li>
+    <li>Contact your administrator if you need urgent access</li>
+{% endblock %}
+
+{% block auth_title %}Pending Approval{% endblock %}
+{% block auth_subtitle %}Your account is under review.{% endblock %}
+
+{% block auth_content %}
+    <div class="pending-panel">
+        Your account is pending approval. Please wait for admin approval.
+    </div>
+{% endblock %}
+
+{% block auth_footer %}
+    <p class="auth-footer"><a href="{% url 'main:login' %}">Back to sign in</a></p>
+{% endblock %}

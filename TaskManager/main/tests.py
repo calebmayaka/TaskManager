@@ -1,5 +1,6 @@
 import tempfile
 
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
@@ -456,3 +457,108 @@ class AuthApprovalFlowTests(TestCase):
             target_user=user, action=UserApprovalAuditLog.Action.APPROVED
         )
         self.assertEqual(approved_logs.count(), 1)
+
+
+class ErrorPageTests(TestCase):
+    def _create_staff_no_perm(self):
+        return User.objects.create_user(
+            username="staffnoperm2",
+            email="staffnoperm2@example.com",
+            password="StrongPass!123",
+            is_staff=True,
+            is_active=True,
+        )
+
+    def test_404_returns_custom_branded_page(self):
+        response = self.client.get("/this-path-does-not-exist-at-all/")
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, "Page Not Found", status_code=404)
+        self.assertContains(response, "TaskManager", status_code=404)
+
+    def test_404_includes_requested_path_in_response(self):
+        response = self.client.get("/nonexistent/path/")
+        self.assertContains(response, "/nonexistent/path/", status_code=404)
+
+    def test_403_returns_custom_branded_page(self):
+        self.client.force_login(self._create_staff_no_perm())
+        response = self.client.get(reverse("main:admin-dashboard-tasks"))
+        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "Access Denied", status_code=403)
+        self.assertContains(response, "TaskManager", status_code=403)
+
+    def test_403_redirects_unauthenticated_user_to_login_instead(self):
+        response = self.client.get(reverse("main:admin-dashboard-tasks"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("main:login"), response.url)
+
+
+class RateLimitTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    def _post_login(self, ip="1.2.3.4"):
+        return self.client.post(
+            reverse("main:login"),
+            data={"username": "nobody@example.com", "password": "wrongpass"},
+            REMOTE_ADDR=ip,
+        )
+
+    def _post_register(self, email, ip="1.2.3.4"):
+        return self.client.post(
+            reverse("main:register"),
+            data={
+                "email": email,
+                "full_name": "Rate Test",
+                "password1": "StrongPass!123",
+                "password2": "StrongPass!123",
+            },
+            REMOTE_ADDR=ip,
+        )
+
+    def test_login_allows_requests_up_to_limit(self):
+        for i in range(5):
+            response = self._post_login()
+            self.assertNotEqual(response.status_code, 429)
+
+    def test_login_blocks_on_attempt_exceeding_limit(self):
+        for _ in range(5):
+            self._post_login()
+        response = self._post_login()
+        self.assertEqual(response.status_code, 429)
+
+    def test_login_rate_limit_is_per_ip(self):
+        for _ in range(5):
+            self._post_login(ip="1.2.3.4")
+        response = self._post_login(ip="9.9.9.9")
+        self.assertNotEqual(response.status_code, 429)
+
+    def test_login_get_requests_are_never_rate_limited(self):
+        for _ in range(10):
+            response = self.client.get(reverse("main:login"), REMOTE_ADDR="1.2.3.4")
+            self.assertEqual(response.status_code, 200)
+
+    def test_register_allows_requests_up_to_limit(self):
+        for i in range(10):
+            response = self._post_register(email=f"rl{i}@example.com")
+            self.assertNotEqual(response.status_code, 429)
+
+    def test_register_blocks_on_attempt_exceeding_limit(self):
+        for i in range(10):
+            self._post_register(email=f"rl{i}@example.com")
+        response = self._post_register(email="rl10@example.com")
+        self.assertEqual(response.status_code, 429)
+
+    def test_register_rate_limit_is_per_ip(self):
+        for i in range(10):
+            self._post_register(email=f"rl{i}@example.com", ip="1.2.3.4")
+        response = self._post_register(email="other@example.com", ip="9.9.9.9")
+        self.assertNotEqual(response.status_code, 429)
+
+    def test_rate_limited_response_contains_window_info(self):
+        for _ in range(5):
+            self._post_login()
+        response = self._post_login()
+        self.assertContains(response, "15 minutes", status_code=429)

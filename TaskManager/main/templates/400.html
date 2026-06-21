@@ -1,0 +1,26 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Bad Request — TaskManager{% endblock %}
+
+{% block brand_title %}Something Looks Off{% endblock %}
+{% block brand_subtitle %}The server couldn't understand the request sent by your browser.{% endblock %}
+{% block brand_points %}
+    <li>Try refreshing the page or going back</li>
+    <li>Clear your browser cache and cookies</li>
+    <li>If the problem persists, contact your administrator</li>
+{% endblock %}
+
+{% block auth_title %}Bad Request{% endblock %}
+{% block auth_subtitle %}Error 400 — The request could not be processed.{% endblock %}
+
+{% block auth_content %}
+    <p class="auth-description">
+        Your browser sent a request the server couldn't understand.
+        This can happen with expired forms, corrupted session data, or an invalid link.
+    </p>
+    <a class="auth-submit-link" href="{% url 'main:login' %}">Start Over</a>
+{% endblock %}
+
+{% block auth_footer %}
+    <p class="auth-footer">Need help? <a href="{% url 'main:login' %}">Return to Login</a></p>
+{% endblock %}
