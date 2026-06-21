@@ -1,5 +1,6 @@
 import tempfile
 
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
@@ -456,3 +457,75 @@ class AuthApprovalFlowTests(TestCase):
             target_user=user, action=UserApprovalAuditLog.Action.APPROVED
         )
         self.assertEqual(approved_logs.count(), 1)
+
+
+class RateLimitTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    def _post_login(self, ip="1.2.3.4"):
+        return self.client.post(
+            reverse("main:login"),
+            data={"username": "nobody@example.com", "password": "wrongpass"},
+            REMOTE_ADDR=ip,
+        )
+
+    def _post_register(self, email, ip="1.2.3.4"):
+        return self.client.post(
+            reverse("main:register"),
+            data={
+                "email": email,
+                "full_name": "Rate Test",
+                "password1": "StrongPass!123",
+                "password2": "StrongPass!123",
+            },
+            REMOTE_ADDR=ip,
+        )
+
+    def test_login_allows_requests_up_to_limit(self):
+        for i in range(5):
+            response = self._post_login()
+            self.assertNotEqual(response.status_code, 429)
+
+    def test_login_blocks_on_attempt_exceeding_limit(self):
+        for _ in range(5):
+            self._post_login()
+        response = self._post_login()
+        self.assertEqual(response.status_code, 429)
+
+    def test_login_rate_limit_is_per_ip(self):
+        for _ in range(5):
+            self._post_login(ip="1.2.3.4")
+        response = self._post_login(ip="9.9.9.9")
+        self.assertNotEqual(response.status_code, 429)
+
+    def test_login_get_requests_are_never_rate_limited(self):
+        for _ in range(10):
+            response = self.client.get(reverse("main:login"), REMOTE_ADDR="1.2.3.4")
+            self.assertEqual(response.status_code, 200)
+
+    def test_register_allows_requests_up_to_limit(self):
+        for i in range(10):
+            response = self._post_register(email=f"rl{i}@example.com")
+            self.assertNotEqual(response.status_code, 429)
+
+    def test_register_blocks_on_attempt_exceeding_limit(self):
+        for i in range(10):
+            self._post_register(email=f"rl{i}@example.com")
+        response = self._post_register(email="rl10@example.com")
+        self.assertEqual(response.status_code, 429)
+
+    def test_register_rate_limit_is_per_ip(self):
+        for i in range(10):
+            self._post_register(email=f"rl{i}@example.com", ip="1.2.3.4")
+        response = self._post_register(email="other@example.com", ip="9.9.9.9")
+        self.assertNotEqual(response.status_code, 429)
+
+    def test_rate_limited_response_contains_window_info(self):
+        for _ in range(5):
+            self._post_login()
+        response = self._post_login()
+        self.assertContains(response, "15 minutes", status_code=429)

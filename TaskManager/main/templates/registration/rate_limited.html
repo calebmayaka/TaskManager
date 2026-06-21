@@ -1,0 +1,16 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Too Many Requests{% endblock %}
+{% block auth_title %}Too Many Attempts{% endblock %}
+{% block auth_subtitle %}Your access has been temporarily restricted.{% endblock %}
+
+{% block auth_content %}
+    <div class="auth-errors">
+        <p>
+            You have made too many requests. Please wait
+            <strong>{{ window_minutes }} minute{% if window_minutes != 1 %}s{% endif %}</strong>
+            before trying again.
+        </p>
+    </div>
+    <a class="auth-submit" style="display:block;text-align:center;text-decoration:none;" href="{% url 'main:login' %}">Back to Login</a>
+{% endblock %}

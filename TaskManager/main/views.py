@@ -11,6 +11,7 @@ from django.views.generic import FormView, RedirectView, TemplateView
 
 from main.forms import AccountProfileForm, PendingAwareAuthenticationForm, RegistrationForm
 from main.models import UserApproval, UserApprovalAuditLog, UserProfile
+from main.rate_limit import RateLimitMixin
 from main.services import (
     approve_user,
     register_user,
@@ -38,9 +39,11 @@ class StaffPermissionRequiredMixin(LoginRequiredMixin, PermissionRequiredMixin):
         return super().handle_no_permission()
 
 
-class RegisterView(FormView):
+class RegisterView(RateLimitMixin, FormView):
     template_name = "registration/register.html"
     form_class = RegistrationForm
+    rate_limit_count = 10
+    rate_limit_window = 3600  # 1 hour
 
     def form_valid(self, form):
         register_user(
@@ -59,9 +62,11 @@ class RegisterView(FormView):
         return context
 
 
-class LoginView(auth_views.LoginView):
+class LoginView(RateLimitMixin, auth_views.LoginView):
     template_name = "registration/login.html"
     authentication_form = PendingAwareAuthenticationForm
+    rate_limit_count = 5
+    rate_limit_window = 900  # 15 minutes
 
 
 class DashboardEntryView(LoginRequiredMixin, View):
