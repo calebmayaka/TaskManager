@@ -1,0 +1,32 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Access Denied — TaskManager{% endblock %}
+
+{% block brand_title %}Access Restricted{% endblock %}
+{% block brand_subtitle %}Your account doesn't have the rights required to view this area.{% endblock %}
+{% block brand_points %}
+    <li>Approval-based access keeps the platform secure</li>
+    <li>Contact your administrator to request elevated permissions</li>
+    <li>Make sure you are signed in with the correct account</li>
+{% endblock %}
+
+{% block auth_title %}Access Denied{% endblock %}
+{% block auth_subtitle %}Error 403 — You are not permitted to view this page.{% endblock %}
+
+{% block auth_content %}
+    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+        {% if exception %}
+            {{ exception }}
+        {% else %}
+            You do not have the required permissions to access this resource.
+            If you believe this is a mistake, please contact your administrator.
+        {% endif %}
+    </p>
+    <a class="auth-submit"
+       style="display:block;text-align:center;text-decoration:none;"
+       href="{% url 'main:dashboard-entry' %}">Back to Dashboard</a>
+{% endblock %}
+
+{% block auth_footer %}
+    <p class="auth-footer">Wrong account? <a href="{% url 'main:login' %}">Sign in again</a></p>
+{% endblock %}

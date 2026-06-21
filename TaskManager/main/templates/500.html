@@ -1,0 +1,28 @@
+{% extends "registration/auth_base.html" %}
+
+{% block page_title %}Server Error — TaskManager{% endblock %}
+
+{% block brand_title %}We're On It{% endblock %}
+{% block brand_subtitle %}An unexpected error occurred, but our team has been notified.{% endblock %}
+{% block brand_points %}
+    <li>This is not your fault — something failed on our side</li>
+    <li>Try again in a few minutes</li>
+    <li>Contact your administrator if the issue continues</li>
+{% endblock %}
+
+{% block auth_title %}Server Error{% endblock %}
+{% block auth_subtitle %}Error 500 — Something went wrong on our end.{% endblock %}
+
+{% block auth_content %}
+    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+        An unexpected error occurred while processing your request.
+        We apologise for the inconvenience. Please try again in a few moments.
+    </p>
+    <a class="auth-submit"
+       style="display:block;text-align:center;text-decoration:none;"
+       href="{% url 'main:login' %}">Return to Login</a>
+{% endblock %}
+
+{% block auth_footer %}
+    <p class="auth-footer">Still broken? Contact your system administrator.</p>
+{% endblock %}

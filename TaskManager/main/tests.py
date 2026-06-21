@@ -459,6 +459,39 @@ class AuthApprovalFlowTests(TestCase):
         self.assertEqual(approved_logs.count(), 1)
 
 
+class ErrorPageTests(TestCase):
+    def _create_staff_no_perm(self):
+        return User.objects.create_user(
+            username="staffnoperm2",
+            email="staffnoperm2@example.com",
+            password="StrongPass!123",
+            is_staff=True,
+            is_active=True,
+        )
+
+    def test_404_returns_custom_branded_page(self):
+        response = self.client.get("/this-path-does-not-exist-at-all/")
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, "Page Not Found", status_code=404)
+        self.assertContains(response, "TaskManager", status_code=404)
+
+    def test_404_includes_requested_path_in_response(self):
+        response = self.client.get("/nonexistent/path/")
+        self.assertContains(response, "/nonexistent/path/", status_code=404)
+
+    def test_403_returns_custom_branded_page(self):
+        self.client.force_login(self._create_staff_no_perm())
+        response = self.client.get(reverse("main:admin-dashboard-tasks"))
+        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "Access Denied", status_code=403)
+        self.assertContains(response, "TaskManager", status_code=403)
+
+    def test_403_redirects_unauthenticated_user_to_login_instead(self):
+        response = self.client.get(reverse("main:admin-dashboard-tasks"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("main:login"), response.url)
+
+
 class RateLimitTests(TestCase):
     def setUp(self):
         cache.clear()
