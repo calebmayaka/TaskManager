@@ -14,13 +14,11 @@
 {% block auth_subtitle %}Error 500 — Something went wrong on our end.{% endblock %}
 
 {% block auth_content %}
-    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+    <p class="auth-description">
         An unexpected error occurred while processing your request.
         We apologise for the inconvenience. Please try again in a few moments.
     </p>
-    <a class="auth-submit"
-       style="display:block;text-align:center;text-decoration:none;"
-       href="{% url 'main:login' %}">Return to Login</a>
+    <a class="auth-submit-link" href="{% url 'main:login' %}">Return to Login</a>
 {% endblock %}
 
 {% block auth_footer %}

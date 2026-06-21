@@ -14,7 +14,7 @@
 {% block auth_subtitle %}Error 403 — You are not permitted to view this page.{% endblock %}
 
 {% block auth_content %}
-    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+    <p class="auth-description">
         {% if exception %}
             {{ exception }}
         {% else %}
@@ -22,9 +22,7 @@
             If you believe this is a mistake, please contact your administrator.
         {% endif %}
     </p>
-    <a class="auth-submit"
-       style="display:block;text-align:center;text-decoration:none;"
-       href="{% url 'main:dashboard-entry' %}">Back to Dashboard</a>
+    <a class="auth-submit-link" href="{% url 'main:dashboard-entry' %}">Back to Dashboard</a>
 {% endblock %}
 
 {% block auth_footer %}

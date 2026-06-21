@@ -14,13 +14,11 @@
 {% block auth_subtitle %}Error 400 — The request could not be processed.{% endblock %}
 
 {% block auth_content %}
-    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+    <p class="auth-description">
         Your browser sent a request the server couldn't understand.
         This can happen with expired forms, corrupted session data, or an invalid link.
     </p>
-    <a class="auth-submit"
-       style="display:block;text-align:center;text-decoration:none;"
-       href="{% url 'main:login' %}">Start Over</a>
+    <a class="auth-submit-link" href="{% url 'main:login' %}">Start Over</a>
 {% endblock %}
 
 {% block auth_footer %}

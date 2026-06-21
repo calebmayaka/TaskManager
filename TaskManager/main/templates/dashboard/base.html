@@ -64,6 +64,15 @@
             border-radius: 8px;
             font-size: 0.86rem;
             font-weight: 600;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-btn:hover,
+        .nav-btn:focus-visible {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-color: #bfd0f6;
+            outline: none;
         }
 
         .nav-btn.is-active {
@@ -89,6 +98,14 @@
             font-size: 0.86rem;
             cursor: pointer;
             font: inherit;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-link:hover,
+        .btn-link:focus-visible {
+            background: var(--surface-muted);
+            border-color: #aabbd8;
+            outline: none;
         }
 
         .logout-form {
@@ -125,7 +142,7 @@
             border-radius: 8px;
             padding: 9px 10px;
             background: #e8f4ec;
-            color: #1f7a44;
+            color: var(--ok);
             border: 1px solid #c6e8d2;
         }
 

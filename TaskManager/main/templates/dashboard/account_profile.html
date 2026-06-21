@@ -51,11 +51,20 @@
         font-size: 0.76rem;
     }
 
-    .field input {
+    .field input,
+    .field select {
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 9px 10px;
         font: inherit;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus,
+    .field select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(35, 83, 196, 0.15);
     }
 
     .phone-row {
@@ -70,6 +79,13 @@
         padding: 8px 9px;
         font: inherit;
         background: white;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .phone-row input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(35, 83, 196, 0.15);
     }
 
     .errors {
@@ -129,6 +145,21 @@
         font-size: 0.86rem;
         font-weight: 600;
         cursor: pointer;
+        font: inherit;
+        font-size: 0.86rem;
+        font-weight: 600;
+        transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+        background: #1e47b0;
+        border-color: #1a3f9e;
+        outline: none;
+    }
+
+    .btn-primary:active {
+        transform: translateY(1px);
     }
 
     @media (max-width: 760px) {

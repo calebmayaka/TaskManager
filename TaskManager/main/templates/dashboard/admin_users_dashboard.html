@@ -100,12 +100,28 @@
         background: #e9f7ee;
         color: var(--ok);
         border-color: #bfe4cc;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-approve:hover,
+    .btn-approve:focus-visible {
+        background: #cfeedd;
+        border-color: #9bcfb0;
+        outline: none;
     }
 
     .btn-reject {
         background: #fdeeee;
         color: var(--danger);
         border-color: #f7c8c8;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-reject:hover,
+    .btn-reject:focus-visible {
+        background: #fad9d9;
+        border-color: #f0a0a0;
+        outline: none;
     }
 
     .event-list {
@@ -130,8 +146,19 @@
         color: var(--ink);
     }
 
+    .inline-form--wide {
+        grid-template-columns: 1fr 1fr auto;
+    }
+
     @media (max-width: 920px) {
         .panel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .inline-form,
+        .inline-form--wide {
             grid-template-columns: 1fr;
         }
     }
@@ -172,11 +199,11 @@
                         <button class="btn btn-approve" type="submit">Approve</button>
                     </form>
 
-                    <form class="inline-form" method="post" action="{% url 'main:review-user-approval' approval.user.id 'reject' %}">
+                    <form class="inline-form inline-form--wide" method="post" action="{% url 'main:review-user-approval' approval.user.id 'reject' %}">
                         {% csrf_token %}
                         <input type="text" name="reason" aria-label="Rejection reason for {{ approval.user.email }}" placeholder="Rejection reason">
-                        <button class="btn btn-reject" type="submit">Reject</button>
                         <input type="text" name="notes" aria-label="Rejection notes for {{ approval.user.email }}" placeholder="Optional rejection note">
+                        <button class="btn btn-reject" type="submit">Reject</button>
                     </form>
                 </div>
             {% endfor %}

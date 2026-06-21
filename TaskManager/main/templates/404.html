@@ -14,18 +14,15 @@
 {% block auth_subtitle %}Error 404 — We couldn't find that page.{% endblock %}
 
 {% block auth_content %}
-    <p style="color:var(--muted);font-size:0.95rem;margin:0 0 20px;line-height:1.55;">
+    <p class="auth-description">
         {% if request_path %}
-            <code style="background:var(--bg-1);padding:2px 6px;border-radius:5px;font-size:0.87rem;">{{ request_path }}</code>
-            does not exist.
+            <code>{{ request_path }}</code> does not exist.
         {% else %}
             The page you requested does not exist.
         {% endif %}
         It may have been removed or the link might be outdated.
     </p>
-    <a class="auth-submit"
-       style="display:block;text-align:center;text-decoration:none;"
-       href="{% url 'main:login' %}">Go to Login</a>
+    <a class="auth-submit-link" href="{% url 'main:login' %}">Go to Login</a>
 {% endblock %}
 
 {% block auth_footer %}
